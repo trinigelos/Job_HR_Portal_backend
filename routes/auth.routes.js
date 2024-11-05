@@ -35,17 +35,23 @@ router.get("/session", (req, res) => {
 });
 
 router.post("/signup", isLoggedOut, (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, email, confirmPassword } = req.body;
 
-  if (!username || !email || !password) {
+   // Validate email
+   if (!email || !email.includes("@")) {
+    return res.status(400).json({ message: "Invalid email" });
+  }
+
+  // check if all data is being written in all fields
+  if (!username || !email || !password ||!confirmPassword ) {
     return res
       .status(400)
-      .json({ errorMessage: "Please provide all required data." });
+      .json({ errorMessage: "Por favor, ingresa todos los datos" });
   }
 
   if (password.length < 8) {
     return res.status(400).json({
-      errorMessage: "Your password needs to be at least 8 characters long.",
+      errorMessage: "Tu contraseña debe ser al menos de 8 caracteres.",
     });
   }
 
@@ -64,10 +70,10 @@ router.post("/signup", isLoggedOut, (req, res) => {
  
 
     // Search the database for a user with the username submitted in the form
-      const existingUser = User.findOne({ $or: [{ username }, { email }] }).then((found) => {
+     User.findOne({ $or: [{ username }, { email }] }).then((found) => {
     // If the user is found, send the message username is taken
-    if (existingUser) {
-      return res.status(400).json({ errorMessage: "Username already taken." });
+    if (found) {
+      return res.status(400).json({ errorMessage: "Email registrado a otra cuenta" });
     }
 
     // if user is not found, create a new user - start with hashing the password
@@ -108,10 +114,10 @@ router.post("/signup", isLoggedOut, (req, res) => {
 router.post("/login", isLoggedOut, (req, res, next) => {
   const { username, password, email } = req.body;
 
-  if (!username) {
+  if ((!username && !email) || !password) {
     return res
       .status(400)
-      .json({ errorMessage: "Please provide your username." });
+      .json({ errorMessage: "Intenta nuevamente, usuario o email incorrecto" });
   }
 
   // Here we use the same logic as above
