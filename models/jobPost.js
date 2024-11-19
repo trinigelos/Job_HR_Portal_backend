@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 const jobPostSchema = new mongoose.Schema({
   title: { type: String, required: true },
   company: { type: String },
-  location: { type: String },
+  locationTerm: { type: String },
   description: { type: String },
   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   category: { type: String },
@@ -22,12 +22,12 @@ const jobPostSchema = new mongoose.Schema({
 });
 
 jobPostSchema.index(
-  { title: "text", company: "text", location: "text", description: "text" },
+  { title: "text", company: "text", locationTerm: "text", description: "text" },
   {
     weights: {
       title: 10,
       company: 5,
-      location: 5,
+      locationTerm: 5,
     },
     default_language: "spanish", // This setting avoids stemming and stop words filtering in your text search.
   }

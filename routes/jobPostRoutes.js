@@ -45,25 +45,30 @@ router.post("/", authMiddleware, async (req, res) => {
 
 // Get all job posts (public)
 router.get("/", async (req, res) => {
-  const { searchTerm, location } = req.query;
+  const { searchTerm, locationTerm } = req.query;
 
-  let filter = { isDeleted: false };
+  // Initialize filter with non-deleted items
+ // Backend filter update logic to ensure the search works as intended
+ let filter = { isDeleted: false };
 
-  if (searchTerm) {
-    filter.$or = [
-      { title: { $regex: searchTerm, $options: "i" } },
-      { company: { $regex: searchTerm, $options: "i" } },
-    ];
-  }
+ if (searchTerm || locationTerm) {
+   filter.$or = [];
+ 
+   if (searchTerm) {
+     filter.$or.push(
+       { title: { $regex: searchTerm, $options: "i" } },
 
-  if (location) {
-    if (!filter.$or) {
-      filter.location = { $regex: location, $options: "i" };
-    } else {
-      filter.$or.push({ location: { $regex: location, $options: "i" } });
-    }
-  }
+     );
+   }
+ 
+   if (locationTerm) {
+     filter.$or.push({ locationTerm: { $regex: locationTerm, $options: "i" } });
+   }
+ }
 
+ // Log the constructed filter to verify
+ console.log("Filter:", JSON.stringify(filter));
+  
   try {
     const jobPosts = await JobPost.find(filter);
     res.status(200).json(jobPosts);
