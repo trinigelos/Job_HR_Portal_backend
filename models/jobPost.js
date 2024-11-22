@@ -9,6 +9,7 @@ const jobPostSchema = new mongoose.Schema({
   description: { type: String },
   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   category: { type: String },
+  applicationCode: {type: String},
   salaryRange: { type: String },
   employmentType: { type: String },
   employmentStyle: { type: String },
