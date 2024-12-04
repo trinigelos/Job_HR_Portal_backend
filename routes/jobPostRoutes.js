@@ -5,6 +5,7 @@ const router = express.Router();
 const JobPost = require("../models/jobPost");
 const Session = require("../models/Session.model");
 
+
 // Middleware to verify the session token
 const authMiddleware = async (req, res, next) => {
   try {
